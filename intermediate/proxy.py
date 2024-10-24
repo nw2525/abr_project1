@@ -16,19 +16,11 @@ fake_ip = sys.argv[3]       # 127.0.0.1
 server_ip = sys.argv[4]     # 127.0.0.1
 server_port = '80'          # send to server
 
-# Set up proxy
-proxy_socket = socket(AF_INET, SOCK_STREAM)
-proxy_socket.bind((str(fake_ip), int(listen_port)))
+def handle_client(client_socket, log, server_ip, server_port):
+    if os.path.exists(log):
+        os.remove(log)
 
-if os.path.exists(log):
-    os.remove(log)
-
-while True:
-    # connect to client(s)
-    proxy_socket.listen(1)
-    client_socket, addr = proxy_socket.accept()
-
-    # connect to server
+    # Connect to server
     server_socket = socket(AF_INET, SOCK_STREAM)
     server_socket.connect((str(server_ip), int(server_port)))
     connected = True
@@ -39,7 +31,7 @@ while True:
     while connected:
         file = open(log, "a")
         client_request = 0
-        while client_request == 0:
+        while not client_request:
             client_request = client_socket.recv(8192)
         # print("Request received from client: ", len(client_request))
 
@@ -96,3 +88,13 @@ while True:
 
     client_socket.close()
     server_socket.close()
+
+proxy_socket = socket(AF_INET, SOCK_STREAM)
+proxy_socket.bind((str(fake_ip), int(listen_port)))
+proxy_socket.listen(1)
+client_socket, addr = proxy_socket.accept()
+
+while True:
+    client_socket, addr = proxy_socket.accept()
+    client_thread = threading.Thread(target=handle_client, args=(client_socket, log, server_ip, server_port))
+    client_thread.start()
