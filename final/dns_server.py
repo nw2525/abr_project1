@@ -9,23 +9,23 @@ log = sys.argv[2]           # write to here
 server_port = sys.argv[3]   # UDP listen port
 dec_method = sys.argv[4]    # "round-robin" or "lowest-latency"
 
-serverSocket = socket(AF_INET, SOCK_DGRAM)
+server_socket = socket(AF_INET, SOCK_DGRAM)
 
 HOST = "127.0.0.1"
-serverSocket.bind((HOST , server_port))
+server_socket.bind((HOST , server_port))
 
 # Recieving message from client
-clientMessage, clientAddress = serverSocket.recvfrom(2048)
+client_message, client_address = server_socket.recvfrom(2048)
 
 
-print("Received Message from Client: ", clientMessage.decode())
+print("Received Message from Client: ", client_message.decode())
 
 # Modifying the message
-clientMessage = clientMessage.decode().upper()
+client_message = client_message.decode().upper()
 
-print("Sending Message to Client: ", clientMessage)
+print("Sending Message to Client: ", client_message)
 
 # Sending the encoded modified message back to the client
-serverSocket.sendto(clientMessage.encode(), clientAddress)
+server_socket.sendto(client_message.encode(), client_address)
 
-serverSocket.close()
+server_socket.close()

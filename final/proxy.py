@@ -23,6 +23,7 @@ def query_dns_server(dns_server_ip, dns_server_port):
     client_socket.sendto(message.encode(), (dns_server_ip, dns_server_port))
     server_message, server_addr = client_socket.recvfrom(2048)
     print(server_message.decode())
+    ## get server ip here
     server_ip = "5.0.0.1"
     return server_ip
 
@@ -34,6 +35,7 @@ def handle_client(client_socket, log, dns_server_ip, dns_server_port):
     while True:
         # Query dns_server for server ip
         server_ip = query_dns_server(dns_server_ip, dns_server_port)
+
         # Connect to server
         server_socket = socket(AF_INET, SOCK_STREAM)
         server_socket.connect((str(server_ip), int(server_port)))
